@@ -25,6 +25,7 @@
                                     <th>HP</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
+                                    <th>Punch</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -35,6 +36,7 @@
                                     <td th:text="${hero.hp}"></td>
                                     <td><a th:href="@{/edit/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-edit ml-2">Edit</i></a></td>
                                     <td><a th:href="@{/delete/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-times ml-2">Delete</i></a></td>
+                                    <td><a th:href="@{/fight/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-times ml-2">Punch</i></a></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -55,7 +55,6 @@ public class HeroController {
             hero.setId(id);
             return "update-hero";
         }
-        
         heroRepository.save(hero);
 
         return "redirect:/index";
