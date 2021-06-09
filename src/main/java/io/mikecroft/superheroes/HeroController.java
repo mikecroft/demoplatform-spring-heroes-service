@@ -1,5 +1,7 @@
 package io.mikecroft.superheroes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +12,37 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 @Controller
 public class HeroController {
     
     private final HeroRepository heroRepository;
 
+    private Integer myHP;
+    private Counter recoveryCounter;
+    private MeterRegistry meterRegistry;
+
     @Autowired
-    public HeroController(HeroRepository heroRepository) {
+    public HeroController(HeroRepository heroRepository,MeterRegistry meterRegistry) {
         this.heroRepository = heroRepository;
+        this.meterRegistry = meterRegistry;
+        recoveryCounter = this.meterRegistry.counter("fight.recovery");
     }
     
-    @GetMapping("/index")
-    public String showHeroList(Model model) {
+    @GetMapping({"/index", "/"})
+    public String showHeroList(Model model, HttpServletRequest request, HttpSession session) {
         model.addAttribute("heroes", heroRepository.findAll());
+
+        myHP = (Integer) session.getAttribute("MY_HP");
+		if (myHP == null) {
+			myHP = 100;
+		}
+
+		model.addAttribute("myHP", myHP);
+        request.getSession().setAttribute("MY_HP", myHP);
+
         return "index";
     }
     
@@ -65,6 +85,18 @@ public class HeroController {
         Hero hero = heroRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid hero Id:" + id));
         heroRepository.delete(hero);
         
+        return "redirect:/index";
+    }
+
+    @GetMapping("/recover")
+    public String recover(Model model, HttpServletRequest request) {
+        if (myHP < 96){
+            myHP += 5;
+        } else {
+            myHP = 100;
+        }
+        request.getSession().setAttribute("MY_HP", myHP);
+        recoveryCounter.increment();
         return "redirect:/index";
     }
 }
