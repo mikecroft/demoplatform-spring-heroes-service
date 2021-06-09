@@ -1,7 +1,7 @@
 drop table if exists HERO;
 
 create table HERO(
-  ID int not null AUTO_INCREMENT,
+  ID int not null,
   NAME varchar(128) not null,
   POWER varchar(128) not null,
   WEAKNESS varchar(128),

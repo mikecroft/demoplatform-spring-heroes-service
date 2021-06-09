@@ -1,0 +1,18 @@
+apiVersion: skaffold/v2beta16
+kind: Config
+build:
+  artifacts:
+  - image: mikecroft/spring-heroes
+    jib: {}
+deploy:
+  helm:
+    releases:
+    - name: spring-heroes
+      chartPath: charts/spring-boot
+      artifactOverrides:
+        image: mikecroft/spring-heroes
+      overrides:
+        springProfilesActive: dev
+      imageStrategy:
+        helm:
+          explicitRegistry: false
