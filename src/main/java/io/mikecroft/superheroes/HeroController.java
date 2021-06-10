@@ -1,5 +1,9 @@
 package io.mikecroft.superheroes;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Controller
@@ -22,13 +27,21 @@ public class HeroController {
 
     private Integer myHP;
     private Counter recoveryCounter;
+    private AtomicInteger hpGauge;
     private MeterRegistry meterRegistry;
+    private String hostname;
 
     @Autowired
     public HeroController(HeroRepository heroRepository,MeterRegistry meterRegistry) {
         this.heroRepository = heroRepository;
         this.meterRegistry = meterRegistry;
-        recoveryCounter = this.meterRegistry.counter("fight.recovery");
+        this.recoveryCounter = this.meterRegistry.counter("fight.recovery");
+        this.hpGauge = this.meterRegistry.gauge("fight.challenger.hp", new AtomicInteger(100));
+        try {
+            this.hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
     
     @GetMapping({"/index", "/"})
@@ -39,9 +52,9 @@ public class HeroController {
 		if (myHP == null) {
 			myHP = 100;
 		}
-
 		model.addAttribute("myHP", myHP);
         request.getSession().setAttribute("MY_HP", myHP);
+        request.getSession().setAttribute("HOSTNAME", hostname);
 
         return "index";
     }
@@ -95,6 +108,7 @@ public class HeroController {
         } else {
             myHP = 100;
         }
+        hpGauge.set(myHP);
         request.getSession().setAttribute("MY_HP", myHP);
         recoveryCounter.increment();
         return "redirect:/index";

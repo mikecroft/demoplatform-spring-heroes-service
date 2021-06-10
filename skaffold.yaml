@@ -16,3 +16,7 @@ deploy:
       imageStrategy:
         helm:
           explicitRegistry: false
+portForward:
+- resourceType: service
+  resourceName: spring-heroes-spring-boot
+  port: 8080

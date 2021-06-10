@@ -12,6 +12,7 @@
     <body>
         <div th:switch="${heroes}" class="container my-5">
             <div class="row">
+                <p th:text="'Hostname: ' + ${session.HOSTNAME}" style="color:#999999;float: right;"></p></p>
                 <div class="col-md-6">
                     <h2 th:case="null">No heroes yet!</h2>
                     <div th:case="*">
@@ -29,8 +30,6 @@
                                     <th>Power</th>
                                     <th>Weakness</th>
                                     <th>HP</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
                                     <th>Fight</th>
                                 </tr>
                             </thead>
@@ -40,11 +39,9 @@
                                     <td th:text="${hero.power}"></td>
                                     <td th:text="${hero.weakness}"></td>
                                     <td th:text="${hero.hp}"></td>
-                                    <td><a th:href="@{/edit/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-edit ml-2">📝</i></a></td>
-                                    <td><a th:href="@{/delete/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-times ml-2">⛔️</i></a></td>
                                     <td>
                                         <span th:if="${hero.hp} gt 0 and ${session.MY_HP} gt 0">
-                                            <a th:href="@{/fight/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-times ml-2">Fight</i></a>
+                                            <a th:href="@{/fight/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-times ml-2">🥊 Fight</i></a>
                                         </span>
                                     </td>
                                 </tr>

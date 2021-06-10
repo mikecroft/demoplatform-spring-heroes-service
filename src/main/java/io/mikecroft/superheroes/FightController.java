@@ -1,5 +1,7 @@
 package io.mikecroft.superheroes;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -27,14 +29,17 @@ public class FightController {
     private Counter punchCounter;
     private Counter kickCounter;
     private Counter curseCounter;
+    private AtomicInteger hpGauge;
 
     @Autowired
     public FightController(HeroRepository heroRepository, MeterRegistry meterRegistry) {
         this.heroRepository = heroRepository;
         this.meterRegistry = meterRegistry;
-        punchCounter = this.meterRegistry.counter("fight.punches");
-        kickCounter = this.meterRegistry.counter("fight.kicks");
-        curseCounter = this.meterRegistry.counter("fight.curses");
+        this.punchCounter = this.meterRegistry.counter("fight.punches");
+        this.kickCounter = this.meterRegistry.counter("fight.kicks");
+        this.curseCounter = this.meterRegistry.counter("fight.curses");
+        this.hpGauge = this.meterRegistry.gauge("fight.challenger.hp", new AtomicInteger(100));
+
     }
 
     @GetMapping("/fight/{id}")
@@ -64,6 +69,7 @@ public class FightController {
         heroRepository.save(hero);
 
         myHP -= 4;
+        hpGauge.set(myHP);
 		request.getSession().setAttribute("MY_HP", myHP < 0 ? 0 : myHP);
 
         punchCounter.increment();
@@ -81,6 +87,7 @@ public class FightController {
         heroRepository.save(hero);
 
         myHP -= 6;
+        hpGauge.set(myHP);
 		request.getSession().setAttribute("MY_HP", myHP < 0 ? 0 : myHP);
 
         kickCounter.increment();
@@ -98,6 +105,7 @@ public class FightController {
         heroRepository.save(hero);
 
         myHP -= 5;
+        hpGauge.set(myHP);
 		request.getSession().setAttribute("MY_HP", myHP < 0 ? 0 : myHP);
 
         curseCounter.increment();

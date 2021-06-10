@@ -3,7 +3,7 @@ replicaCount: 1
 
 # Override these settings and use your container image.
 image:
-  repository: mikecroft/spring-hello-world-app
+  repository: 005459661421.dkr.ecr.eu-west-2.amazonaws.com/heroes-service
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -18,12 +18,12 @@ service:
   type: LoadBalancer
   port: 8080
 
-ingressBase: mike-ocp-4-459768-8e403d02da27f23cda259248b817e83d-0000.eu-gb.containers.appdomain.cloud
+ingressBase: dev1.eks.openshiftlabs.net
 ingress:
-  enabled: true
+  enabled: false
   annotations: {}
   hosts:
-    - host: spring-hello-world
+    - host: spring-boot
       paths: ["/"]
   tls: []
 
