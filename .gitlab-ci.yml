@@ -1,7 +1,3 @@
-# This file is a template, and might need editing before it works on your project.
-# Build JAVA applications using Apache Maven (http://maven.apache.org)
-# For docker image tags see https://hub.docker.com/_/maven/
-#
 # For general lifecycle information see https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 
 # This template will build and test your projects
@@ -10,15 +6,16 @@
 # * Deploy built artifacts from main branch only.
 
 variables:
-  # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
-  # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  # As of Maven 3.3.0 instead of this you may define these options in `.mvn/maven.config` so the same config is used
-  # when running from the command line.
-  # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
-# This template uses jdk8 for verifying and deploying images
+  DOCKER_REGISTRY: 005459661421.dkr.ecr.eu-west-2.amazonaws.com
+  AWS_DEFAULT_REGION: eu-west-2
+  APP_NAME: heroes-service
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
 image: maven:3-jdk-11
 
 # Cache downloaded dependencies and plugins between builds.
@@ -28,10 +25,6 @@ cache:
     - .m2/repository
   key: "$CI_JOB_NAME"
 
-# To deploy packages from CI, create a ci_settings.xml file
-# For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/project/packages/maven_repository.html#creating-maven-packages-with-gitlab-cicd for more details.
-# Please note: The GitLab Maven Repository is currently only available in GitLab Premium / Ultimate.
-# For `main` branch run `mvn deploy` automatically.
 package:jdk11:
   stage: build
   artifacts:
@@ -42,8 +35,6 @@ package:jdk11:
   only:
     - main
 
-
-# This file is a template, and might need editing before it works on your project.
 docker-build-main:
   # Official docker image.
   image: docker:latest
@@ -51,10 +42,17 @@ docker-build-main:
   services:
     - docker:dind
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - apk add --no-cache curl jq python3 py3-pip
+    - pip install awscli
+    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    - aws --version
+    - docker info
+    - docker --version
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
+    - docker build --pull -t $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG .
+    - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG
+    - docker tag $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG $DOCKER_REGISTRY/$APP_NAME:latest
+    - docker push $DOCKER_REGISTRY/$APP_NAME:latest
   only:
     - main
 
@@ -65,9 +63,16 @@ docker-build:
   services:
     - docker:dind
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - apk add --no-cache curl jq python3 py3-pip
+    - pip install awscli
+    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    - aws --version
+    - docker info
+    - docker --version
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker build --pull -t $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG .
+    - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG
+    - docker tag $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_REF_SLUG $DOCKER_REGISTRY/$APP_NAME:SNAPSHOT
+    - docker push $DOCKER_REGISTRY/$APP_NAME:SNAPSHOT
   except:
     - main
