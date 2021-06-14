@@ -12,11 +12,11 @@
     <body>
         <div th:switch="${heroes}" class="container my-5">
             <div class="row">
-                <p th:text="'Hostname: ' + ${session.HOSTNAME}" style="color:#999999;float: right;"></p></p>
-                <div class="col-md-6">
+                <div class="col-md-8">
+                    <p th:text="'Hostname: ' + ${session.HOSTNAME}" style="color:#999999;"></p>
                     <h2 th:case="null">No heroes yet!</h2>
                     <div th:case="*">
-                        <h2 class="my-5">Enter the SuperHero Thunderdome</h2>
+                        <h2 class="my-5">🦹 Enter the SuperHero Thunderdome 🦸</h2>
                         <h6> My health points: <label th:text="${session.MY_HP}">HP</label>
                             <p class="my-5"><a href="/recover" class="btn btn-primary">Recover</a></p>
                             <div class="progress active">
