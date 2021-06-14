@@ -31,7 +31,7 @@ ingress:
 monitoring: true
 
 # Set to false to disable Spring Cloud Kubernetes support.
-sck: true
+sck: false
 
 # Set configuration properties.
 config:

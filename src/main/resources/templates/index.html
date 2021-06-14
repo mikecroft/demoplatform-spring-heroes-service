@@ -41,14 +41,14 @@
                                     <td th:text="${hero.hp}"></td>
                                     <td>
                                         <span th:if="${hero.hp} gt 0 and ${session.MY_HP} gt 0">
-                                            <a th:href="@{/fight/{id}(id=${hero.id})}" class="btn btn-primary"><i class="fas fa-hero-times ml-2">🥊 Fight</i></a>
+                                            <a th:href="@{/fight/{id}(id=${hero.id})}" class="btn btn-primary">🥊 Fight</a>
                                         </span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>      
-                    <p class="my-5"><a href="/signup" class="btn btn-primary"><i class="fas fa-hero-plus ml-2">Add</i></a></p>
+                    <p class="my-5"><a href="/signup" class="btn btn-primary">Add</a></p>
                 </div>
             </div>
         </div>
