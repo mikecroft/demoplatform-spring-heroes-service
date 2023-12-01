@@ -32,8 +32,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          {{- if .Values.springProfilesActive }}
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.springProfilesActive | quote}}
+          {{- end }}
           {{- if .Values.sck }}
             - name: SPRING_CLOUD_KUBERNETES_CONFIG_NAME
               value: "{{ include "spring-boot.fullname" . }}"

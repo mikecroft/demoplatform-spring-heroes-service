@@ -15,7 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
-        <jib.maven-plugin-version>3.0.0</jib.maven-plugin-version>
+        <jib.maven-plugin-version>3.2.0</jib.maven-plugin-version>
 	</properties>
 	<dependencies>
 		<dependency>

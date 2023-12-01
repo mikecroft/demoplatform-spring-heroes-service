@@ -40,6 +40,13 @@ config:
 tower:
   useOldRolloutMethod: false
 
+istio:
+  enabled: false
+kong:
+  enabled: false
+flux:
+  enabled: false
+
 extraVarsFiles: {}
   # - name: heroes_target.yaml
   #   value: |-

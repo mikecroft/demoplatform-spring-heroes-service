@@ -1,3 +1,4 @@
+{{- if .Values.istio.enabled }}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
@@ -55,3 +56,4 @@ spec:
         host: {{ include "spring-boot.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
         port:
           number: 8080
+{{- end }}

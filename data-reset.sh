@@ -1,5 +1,5 @@
-# export HOST=http://localhost:8080
-export HOST=https://kong-heroes-dev.istio.dev1.eks.openshiftlabs.net
+export HOST=http://localhost:8080
+# export HOST=https://kong-heroes-dev.istio.dev1.eks.openshiftlabs.net
 export ENDPOINT=heroes # Endpoint exposed automatically by HeroRepository
 
 curl -X PATCH -i -H "Content-Type:application/json" -d '{"name": "Iron Man", "power": "Being Rich", "weakness": "Magnets", "hp": "100"}' ${HOST}/${ENDPOINT}/1
